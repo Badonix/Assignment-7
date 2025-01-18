@@ -24,6 +24,8 @@ public class FacePamphlet extends Program
     private final JButton editImageButton = new JButton("Change Picture");
     private final JButton addFriendButton = new JButton("Add Friend");
 
+    FacePamphletDatabase db;
+
     /**
      * This method has the responsibility for initializing the
      * interactors in the application, and taking care of any other
@@ -36,6 +38,8 @@ public class FacePamphlet extends Program
         editStatusInput.addActionListener(this);
         editImageInput.addActionListener(this);
         addFriendInput.addActionListener(this);
+
+        db = new FacePamphletDatabase();
     }
 
 
@@ -59,6 +63,10 @@ public class FacePamphlet extends Program
         } else if (actionSource == addFriendButton || actionSource == addFriendInput) {
             handleAddFriendEvent();
         }
+    }
+
+    private void handleNotFound(String name) {
+
     }
 
     private void handleAddFriendEvent() {
@@ -90,18 +98,24 @@ public class FacePamphlet extends Program
         if (inputValue.isEmpty()) {
             return;
         }
-        println("Lookup " + inputValue);
-
+        if (!db.containsProfile(inputValue)) {
+            println("Profile " + inputValue + " does not exist");
+            return;
+        }
+        println("Lookup " + db.getProfile(inputValue).toString());
     }
 
     private void handleDeleteEvent() {
-
         String inputValue = nameInput.getText();
         if (inputValue.isEmpty()) {
             return;
         }
-        println("Delete " + inputValue);
-
+        if (!db.containsProfile(inputValue)) {
+            println("Profile " + inputValue + " does not exist");
+            return;
+        }
+        db.deleteProfile(inputValue);
+        println("Profile " + inputValue + " deleted");
     }
 
     private void handleAddEvent() {
@@ -109,7 +123,14 @@ public class FacePamphlet extends Program
         if (inputValue.isEmpty()) {
             return;
         }
-        println("Add Profile " + inputValue);
+        if (db.containsProfile(inputValue)) {
+            // Message that already exists
+            println("Already Exists! " + db.getProfile(inputValue).toString());
+            return;
+        }
+        FacePamphletProfile profile = new FacePamphletProfile(inputValue);
+        db.addProfile(profile);
+        println("Add Profile: " + profile);
 
     }
 

@@ -28,6 +28,7 @@ public class FacePamphletProfile implements FacePamphletConstants {
 
     public FacePamphletProfile(String name) {
         this.name = name;
+        friends = new ArrayList<>();
     }
 
     /**
