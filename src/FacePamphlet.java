@@ -5,7 +5,9 @@
  * management system.
  */
 
+import acm.graphics.GImage;
 import acm.program.Program;
+import acm.util.ErrorException;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -25,6 +27,8 @@ public class FacePamphlet extends Program
     private final JButton addFriendButton = new JButton("Add Friend");
 
     FacePamphletDatabase db;
+
+    FacePamphletProfile activeProfile;
 
     /**
      * This method has the responsibility for initializing the
@@ -65,16 +69,29 @@ public class FacePamphlet extends Program
         }
     }
 
-    private void handleNotFound(String name) {
-
-    }
-
     private void handleAddFriendEvent() {
         String inputValue = addFriendInput.getText();
         if (inputValue.isEmpty()) {
             return;
         }
-        println("Add Friend " + inputValue);
+        if (activeProfile == null) {
+            println("No active profile");
+            return;
+        }
+
+        if (inputValue.equals(activeProfile.getName())) {
+            println("Cannt become friends with yourself");
+            return;
+        }
+        FacePamphletProfile possibleFriend = db.getProfile(inputValue);
+        if (possibleFriend == null) {
+            println("Such Profile does not exist");
+            return;
+        }
+
+        activeProfile.addFriend(inputValue);
+        possibleFriend.addFriend(activeProfile.getName());
+        println("Friend Added " + inputValue);
     }
 
     private void handleEditImageEvent() {
@@ -82,6 +99,19 @@ public class FacePamphlet extends Program
         if (inputValue.isEmpty()) {
             return;
         }
+        if (activeProfile == null) {
+            println("No active profile");
+            return;
+        }
+        GImage image;
+        try {
+            image = new GImage(inputValue);
+        } catch (ErrorException ex) {
+            println("Error, Image not found");
+            return;
+        }
+        activeProfile.setImage(image);
+        db.addProfile(activeProfile);
         println("Edit Image " + inputValue);
     }
 
@@ -90,7 +120,13 @@ public class FacePamphlet extends Program
         if (inputValue.isEmpty()) {
             return;
         }
-        println("Edit Status " + inputValue);
+        if (activeProfile == null) {
+            println("No active profile");
+            return;
+        }
+        activeProfile.setStatus(inputValue);
+        db.addProfile(activeProfile);
+        println("New Status: " + activeProfile.toString());
     }
 
     private void handleLookup() {
@@ -102,7 +138,8 @@ public class FacePamphlet extends Program
             println("Profile " + inputValue + " does not exist");
             return;
         }
-        println("Lookup " + db.getProfile(inputValue).toString());
+        activeProfile = db.getProfile(inputValue);
+        println("Lookup " + activeProfile.toString());
     }
 
     private void handleDeleteEvent() {
@@ -115,6 +152,7 @@ public class FacePamphlet extends Program
             return;
         }
         db.deleteProfile(inputValue);
+        activeProfile = null;
         println("Profile " + inputValue + " deleted");
     }
 
@@ -130,6 +168,7 @@ public class FacePamphlet extends Program
         }
         FacePamphletProfile profile = new FacePamphletProfile(inputValue);
         db.addProfile(profile);
+        activeProfile = profile;
         println("Add Profile: " + profile);
 
     }
