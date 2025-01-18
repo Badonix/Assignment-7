@@ -21,8 +21,8 @@ public class FacePamphletProfile implements FacePamphletConstants {
      * the profile.
      */
 
-    private String name;
-    private String status;
+    private String name = "";
+    private String status = "";
     private GImage image;
     private ArrayList<String> friends;
 

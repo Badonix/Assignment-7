@@ -19,7 +19,7 @@ public class FacePamphletDatabase implements FacePamphletConstants {
      * the database.
      */
     public FacePamphletDatabase() {
-        users = new HashMap<String, FacePamphletProfile>();
+        users = new HashMap<>();
     }
 
 

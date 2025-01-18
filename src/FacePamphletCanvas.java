@@ -12,6 +12,7 @@ import acm.graphics.GImage;
 import acm.graphics.GLabel;
 import acm.graphics.GRect;
 
+import java.awt.*;
 import java.util.Iterator;
 
 public class FacePamphletCanvas extends GCanvas
@@ -20,7 +21,6 @@ public class FacePamphletCanvas extends GCanvas
     GLabel displayMessage;
     GLabel nameLabel;
     GLabel statusLabel;
-    GLabel friendsTitle;
 
     /**
      * Constructor
@@ -62,7 +62,7 @@ public class FacePamphletCanvas extends GCanvas
         removeAll();
         renderName(profile.getName());
         renderImage(profile.getImage());
-        renderStatus(profile.getStatus());
+        renderStatus(profile.getName(), profile.getStatus());
         renderFriends(profile.getFriends());
     }
 
@@ -118,12 +118,17 @@ public class FacePamphletCanvas extends GCanvas
     private void renderName(String name) {
         nameLabel = new GLabel(name);
         nameLabel.setFont(PROFILE_NAME_FONT);
-        add(nameLabel, LEFT_MARGIN, TOP_MARGIN);
+        nameLabel.setColor(Color.BLUE);
+        add(nameLabel, LEFT_MARGIN, TOP_MARGIN + nameLabel.getAscent());
     }
 
-    private void renderStatus(String name) {
+    private void renderStatus(String name, String status) {
         double y = nameLabel.getAscent() + TOP_MARGIN + IMAGE_MARGIN + IMAGE_HEIGHT + STATUS_MARGIN;
-        statusLabel = new GLabel(name);
+        String statusName = name + " " + status;
+        if (status.isEmpty()) {
+            statusName = "No current status";
+        }
+        statusLabel = new GLabel(statusName);
         statusLabel.setFont(PROFILE_STATUS_FONT);
         add(statusLabel, LEFT_MARGIN, y);
     }

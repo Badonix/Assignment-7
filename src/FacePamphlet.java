@@ -78,23 +78,30 @@ public class FacePamphlet extends Program
             return;
         }
         if (activeProfile == null) {
-            canvas.showMessage("No Active Profile");
+            canvas.showMessage("Please select a profile to add friend");
             return;
         }
 
+        // Check if is trying to add himself as a friend
         if (inputValue.equals(activeProfile.getName())) {
-            canvas.showMessage("Cannt become friend with yourself :(");
+            canvas.showMessage("Can't become friends with yourself :(");
             return;
         }
         FacePamphletProfile possibleFriend = db.getProfile(inputValue);
+
+        // Check if exists
         if (possibleFriend == null) {
-            canvas.showMessage("Such profile doesnt exist");
+            canvas.showMessage(inputValue + " doesnt exist");
             return;
         }
 
-        activeProfile.addFriend(inputValue);
+        // Check if already is a friend
+        if (!activeProfile.addFriend(inputValue)) {
+            canvas.showMessage(activeProfile.getName() + " already has " + inputValue + " as a friend");
+            return;
+        }
         possibleFriend.addFriend(activeProfile.getName());
-        canvas.showMessage(inputValue + " has been added to your friends");
+        canvas.showMessage(inputValue + " added as a friend");
     }
 
     private void handleEditImageEvent() {
@@ -103,33 +110,38 @@ public class FacePamphlet extends Program
             return;
         }
         if (activeProfile == null) {
-            canvas.showMessage("No Active Profile");
+            canvas.showMessage("Please select a profile to change picture");
             return;
         }
+
+        // Trying to get the image
         GImage image;
         try {
             image = new GImage(inputValue);
         } catch (ErrorException ex) {
-            canvas.showMessage("Error, image not found");
+            canvas.showMessage("Unable to open image file " + inputValue);
             return;
         }
         activeProfile.setImage(image);
         db.addProfile(activeProfile);
-        canvas.showMessage("Image successfully changed");
+        canvas.displayProfile(activeProfile);
+        canvas.showMessage("Picture updated");
     }
 
+    // Pretty straightforward...
     private void handleEditStatusEvent() {
         String inputValue = editStatusInput.getText();
         if (inputValue.isEmpty()) {
             return;
         }
         if (activeProfile == null) {
-            canvas.showMessage("No Active Profile");
+            canvas.showMessage("Please select a profile to change status");
             return;
         }
         activeProfile.setStatus(inputValue);
         db.addProfile(activeProfile);
-        canvas.showMessage("Succesfully changed status to " + inputValue);
+        canvas.displayProfile(activeProfile);
+        canvas.showMessage("Status updated to " + inputValue);
     }
 
     private void handleLookup() {
@@ -137,12 +149,15 @@ public class FacePamphlet extends Program
         if (inputValue.isEmpty()) {
             return;
         }
+        // We need to clear canvas on each lookup
         if (!db.containsProfile(inputValue)) {
-            canvas.showMessage("Profile " + inputValue + " doesnt exist");
+            canvas.removeAll();
+            canvas.showMessage("Profile with the name " + inputValue + " doesnt exist");
             return;
         }
         activeProfile = db.getProfile(inputValue);
-        canvas.showMessage("Viewing " + activeProfile.getName());
+        canvas.displayProfile(activeProfile);
+        canvas.showMessage("Displaying " + activeProfile.getName());
     }
 
     private void handleDeleteEvent() {
@@ -150,13 +165,17 @@ public class FacePamphlet extends Program
         if (inputValue.isEmpty()) {
             return;
         }
+        // Check if exists...
         if (!db.containsProfile(inputValue)) {
-            canvas.showMessage("Profile " + inputValue + " doesnt exist");
+            canvas.showMessage("A profile with the name " + inputValue + " doesnt exist");
             return;
         }
+
+        // Clear canvas and set active to null
+        canvas.removeAll();
         db.deleteProfile(inputValue);
         activeProfile = null;
-        canvas.showMessage("Profile " + inputValue + " deleted successfully");
+        canvas.showMessage("Profile of " + inputValue + " deleted");
     }
 
     private void handleAddEvent() {
@@ -164,15 +183,17 @@ public class FacePamphlet extends Program
         if (inputValue.isEmpty()) {
             return;
         }
+        // If it exists we need a displayMessage
         if (db.containsProfile(inputValue)) {
-            // Message that already exists
-            canvas.showMessage("Such account already exists");
+            canvas.displayProfile(db.getProfile(inputValue));
+            canvas.showMessage("A profile with the name " + inputValue + " already exists");
             return;
         }
         FacePamphletProfile profile = new FacePamphletProfile(inputValue);
         db.addProfile(profile);
         activeProfile = profile;
-        canvas.showMessage("Successfully added profile " + inputValue);
+        canvas.displayProfile(activeProfile);
+        canvas.showMessage("New profile created");
 
     }
 
