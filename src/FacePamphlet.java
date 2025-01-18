@@ -32,6 +32,10 @@ public class FacePamphlet extends Program
     public void init() {
         initTopbar();
         initSidebar();
+        addActionListeners();
+        editStatusInput.addActionListener(this);
+        editImageInput.addActionListener(this);
+        addFriendInput.addActionListener(this);
     }
 
 
@@ -41,7 +45,72 @@ public class FacePamphlet extends Program
      * to respond to these actions.
      */
     public void actionPerformed(ActionEvent e) {
-        // You fill this in as well as add any additional methods
+        Object actionSource = e.getSource();
+        if (actionSource == addButton) {
+            handleAddEvent();
+        } else if (actionSource == deleteButton) {
+            handleDeleteEvent();
+        } else if (actionSource == lookupButton) {
+            handleLookup();
+        } else if (actionSource == editStatusButton || actionSource == editStatusInput) {
+            handleEditStatusEvent();
+        } else if (actionSource == editImageButton || actionSource == editImageInput) {
+            handleEditImageEvent();
+        } else if (actionSource == addFriendButton || actionSource == addFriendInput) {
+            handleAddFriendEvent();
+        }
+    }
+
+    private void handleAddFriendEvent() {
+        String inputValue = addFriendInput.getText();
+        if (inputValue.isEmpty()) {
+            return;
+        }
+        println("Add Friend " + inputValue);
+    }
+
+    private void handleEditImageEvent() {
+        String inputValue = editImageInput.getText();
+        if (inputValue.isEmpty()) {
+            return;
+        }
+        println("Edit Image " + inputValue);
+    }
+
+    private void handleEditStatusEvent() {
+        String inputValue = editStatusInput.getText();
+        if (inputValue.isEmpty()) {
+            return;
+        }
+        println("Edit Status " + inputValue);
+    }
+
+    private void handleLookup() {
+        String inputValue = nameInput.getText();
+        if (inputValue.isEmpty()) {
+            return;
+        }
+        println("Lookup " + inputValue);
+
+    }
+
+    private void handleDeleteEvent() {
+
+        String inputValue = nameInput.getText();
+        if (inputValue.isEmpty()) {
+            return;
+        }
+        println("Delete " + inputValue);
+
+    }
+
+    private void handleAddEvent() {
+        String inputValue = nameInput.getText();
+        if (inputValue.isEmpty()) {
+            return;
+        }
+        println("Add Profile " + inputValue);
+
     }
 
     private void initTopbar() {
