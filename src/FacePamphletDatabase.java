@@ -7,6 +7,7 @@
  */
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class FacePamphletDatabase implements FacePamphletConstants {
 
@@ -53,6 +54,14 @@ public class FacePamphletDatabase implements FacePamphletConstants {
      * the database is unchanged after calling this method.
      */
     public void deleteProfile(String name) {
+        // At first, we must remove this person from their friends' friends list
+        Iterator<String> profiles = users.get(name).getFriends();
+        while (profiles.hasNext()) {
+            String friendName = profiles.next();
+            // Remove this profile from the friend's list of friends
+            users.get(friendName).removeFriend(name);
+        }
+        // Finally, remove the profile from the users map
         users.remove(name);
     }
 
